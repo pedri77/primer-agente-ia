@@ -1,0 +1,360 @@
+@import "tailwindcss";
+
+/* Fuentes: Google Fonts en index.html, como el resto de webs del registro. */
+
+/* ------------------------------------------------------------------
+   Tokens.
+   Cambia valores, no nombres (los componentes usan void, superficie, acento, texto…).
+   Elige la variante con el registro de web-cinematica/references/variantes.md.
+   ------------------------------------------------------------------ */
+@theme {
+  --font-display: "Young Serif", Georgia, serif;
+  --font-sans: "Manrope", system-ui, sans-serif;
+  --font-cifra: "Manrope", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+
+  /* Variante «oficina marfil»: fondo claro cálido, salvia y naranja. */
+  --color-void: oklch(97% 0.012 85);
+  --color-superficie: oklch(99.3% 0.005 85);
+  --color-elevado: oklch(93.5% 0.02 140);
+  --color-borde: oklch(86% 0.02 85);
+  --color-acento: oklch(52% 0.15 45);
+  --color-acento-2: oklch(47% 0.06 150);
+  --color-bien: oklch(47% 0.1 150);
+  --color-regular: oklch(50% 0.11 70);
+  --color-mal: oklch(50% 0.17 27);
+  --color-texto: oklch(24% 0.02 60);
+  --color-texto-2: oklch(37% 0.02 60);
+  --color-texto-3: oklch(48% 0.02 60);
+
+  --text-hero: clamp(2.75rem, 7vw, 6rem);
+  --text-hero--line-height: 0.98;
+  --text-display: clamp(1.75rem, 3.6vw, 3rem);
+  --text-display--line-height: 1.1;
+  --text-lead: clamp(1.125rem, 1.6vw, 1.375rem);
+  --text-lead--line-height: 1.5;
+  --text-body: clamp(0.9375rem, 1.05vw, 1.0625rem);
+  --text-body--line-height: 1.65;
+  --text-etiqueta: 0.6875rem;
+  --text-etiqueta--line-height: 1.3;
+  --text-etiqueta--letter-spacing: 0.14em;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    background: var(--color-void);
+  }
+  body {
+    margin: 0;
+    background: var(--color-void);
+    color: var(--color-texto);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+  ::selection {
+    background: color-mix(in oklch, var(--color-acento) 30%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-acento);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+}
+
+@layer components {
+  .tarjeta {
+    background: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    border-radius: 14px;
+    padding: clamp(1.25rem, 3vw, 2rem);
+    box-shadow: 0 1px 0 color-mix(in oklch, var(--color-texto) 6%, transparent);
+  }
+  .boton,
+  .boton-sec {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px; /* objetivo táctil */
+    padding: 0 1.1rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    cursor: pointer;
+  }
+  .boton {
+    background: var(--color-acento);
+    color: var(--color-void);
+  }
+  .boton-sec {
+    border: 1px solid var(--color-borde);
+    color: var(--color-texto);
+    background: transparent;
+  }
+  .boton-sec[aria-pressed="true"] {
+    background: var(--color-elevado);
+  }
+}
+
+@layer utilities {
+  [data-aparece] {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+    transition:
+      opacity 0.5s cubic-bezier(0.2, 0.7, 0.1, 1),
+      transform 0.5s cubic-bezier(0.2, 0.7, 0.1, 1);
+    transition-delay: calc(var(--i, 0) * 80ms);
+  }
+  [data-aparece].dentro {
+    opacity: 1;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-aparece] {
+      transform: none;
+      transition-duration: 0.01ms;
+    }
+  }
+}
+
+/* ------------------------------------------------------------------
+   Piezas de la aventura.
+   ------------------------------------------------------------------ */
+@layer components {
+  .barra-estado {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    margin: 1.5rem -1rem 0;
+    padding: 0.75rem 1rem;
+    background: color-mix(in oklch, var(--color-void) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--color-borde);
+  }
+  .barra-estado:empty {
+    display: none;
+  }
+  .indicadores {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.75rem;
+    margin: 0;
+  }
+  .indicadores dt {
+    font-size: var(--text-etiqueta);
+    letter-spacing: var(--text-etiqueta--letter-spacing);
+    text-transform: uppercase;
+    color: var(--color-texto-3);
+  }
+  .indicadores dd {
+    margin: 0;
+    font-size: 1.125rem;
+  }
+  .indicadores .barra {
+    width: 6rem;
+    height: 4px;
+    margin-top: 4px;
+    border-radius: 2px;
+    background: var(--color-borde);
+  }
+  .indicadores .barra span {
+    display: block;
+    height: 100%;
+    border-radius: 2px;
+    background: var(--color-acento);
+    transition: width 0.4s ease;
+  }
+
+  .escena {
+    padding-top: 2.5rem;
+    animation: entra 0.45s cubic-bezier(0.2, 0.7, 0.1, 1) both;
+  }
+  .escena h2:focus {
+    outline: none;
+  }
+  .escena h2:focus-visible {
+    outline: 2px solid var(--color-acento);
+  }
+
+  .opciones-historia {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .opciones-historia button {
+    display: flex;
+    gap: 0.9rem;
+    align-items: flex-start;
+    width: 100%;
+    min-height: 56px;
+    padding: 0.9rem 1.1rem;
+    text-align: left;
+    font-size: 1.0625rem;
+    line-height: 1.45;
+    background: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    border-radius: 12px;
+    color: var(--color-texto);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, transform 0.15s;
+  }
+  .opciones-historia button:hover {
+    border-color: var(--color-acento);
+    background: var(--color-elevado);
+  }
+  .opciones-historia button:active {
+    transform: scale(0.99);
+  }
+  .opciones-historia .letra {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 6px;
+    background: var(--color-elevado);
+    color: var(--color-acento);
+    font-weight: 700;
+    font-size: 0.875rem;
+  }
+
+  .documento {
+    background: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    border-radius: 12px;
+    padding: 1.1rem 1.25rem;
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+  .doc-cabecera {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0 0 1rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid var(--color-borde);
+  }
+  .doc-cabecera div {
+    display: flex;
+    gap: 0.75rem;
+  }
+  .doc-cabecera dt {
+    width: 4.5rem;
+    flex: none;
+    color: var(--color-texto-3);
+  }
+  .doc-cabecera dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+  .doc-adjunto {
+    margin-top: 1rem;
+    color: var(--color-texto-2);
+  }
+  .doc-chat {
+    list-style: none;
+    display: grid;
+    gap: 0.9rem;
+  }
+  .doc-nota {
+    border-left: 3px solid var(--color-acento);
+  }
+
+  .dialogo {
+    max-width: min(32rem, calc(100vw - 2rem));
+    padding: 1.5rem;
+    border: 1px solid var(--color-borde);
+    border-radius: 14px;
+    background: var(--color-superficie);
+    color: var(--color-texto);
+  }
+  .dialogo::backdrop {
+    background: color-mix(in oklch, var(--color-void) 70%, transparent);
+  }
+
+  .final-tipo {
+    display: inline-block;
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    font-weight: 700;
+    color: var(--color-void);
+  }
+  .final-bueno { background: var(--color-bien); }
+  .final-regular { background: var(--color-regular); }
+  .final-malo { background: var(--color-mal); }
+  .repaso {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .repaso li {
+    padding-left: 1rem;
+    border-left: 3px solid var(--color-borde);
+  }
+  .repaso .sello {
+    display: inline-block;
+    margin-right: 0.35rem;
+    padding: 0 0.45rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-void);
+  }
+  .calidad-buena { border-color: var(--color-bien) !important; }
+  .calidad-buena .sello { background: var(--color-bien); }
+  .calidad-regular { border-color: var(--color-regular) !important; }
+  .calidad-regular .sello { background: var(--color-regular); }
+  .calidad-mala { border-color: var(--color-mal) !important; }
+  .calidad-mala .sello { background: var(--color-mal); }
+}
+
+@keyframes entra {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .escena {
+    animation: none;
+  }
+  .indicadores .barra span {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Identidad de esta web: documentos como papeles de oficina sobre la mesa.
+   ------------------------------------------------------------------ */
+@layer components {
+  .documento {
+    box-shadow:
+      0 1px 0 oklch(80% 0.02 85),
+      0 8px 24px -12px oklch(40% 0.04 60 / 0.25);
+  }
+  .doc-nota {
+    background: oklch(96% 0.05 95);
+    border-left-color: var(--color-acento-2);
+  }
+  .doc-log {
+    background: oklch(95.5% 0.015 140);
+  }
+  .doc-chat li {
+    padding: 0.6rem 0.8rem;
+    border-radius: 10px;
+    background: var(--color-elevado);
+  }
+  .cta-final {
+    border-left: 3px solid var(--color-acento);
+  }
+  .fuentes a,
+  .cta-final a:not(.boton) {
+    color: var(--color-acento);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
